@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Parqueaderos</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Parqueaderos</h1>
+        <div id="map"></div>
+        <div id="parking-form">
+            <h2>Agregar Parqueadero</h2>
+            <input type="text" id="name" placeholder="Nombre" required>
+            <input type="text" id="address" placeholder="Dirección">
+            <input type="number" id="spaces" placeholder="Número de espacios">
+            <input type="number" id="price" placeholder="Precio por hora">
+            <button id="save-btn">Guardar Parqueadero</button>
+        </div>
+        <div id="parking-info" class="hidden">
+            <h2>Información del Parqueadero</h2>
+            <p><strong>Nombre:</strong> <span id="info-name"></span></p>
+            <p><strong>Dirección:</strong> <span id="info-address"></span></p>
+            <p><strong>Espacios:</strong> <span id="info-spaces"></span></p>
+            <p><strong>Precio/hora:</strong> $<span id="info-price"></span></p>
+            <button id="close-info">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
