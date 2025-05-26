@@ -1,75 +1,379 @@
-body {
-    font-family: Arial, sans-serif;
+/* Variables CSS para colores y fuentes */
+:root {
+    --primary-color: #FF5A5F; /* Rojo Airbnb */
+    --secondary-color: #008489; /* Verde azulado */
+    --text-color-dark: #222222;
+    --text-color-light: #717171;
+    --border-color: #EBEBEB;
+    --background-light: #F7F7F7;
+    --font-family: 'Poppins', sans-serif;
+    --box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    --border-radius: 8px;
+}
+
+/* Estilos globales y reseteo básico */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--text-color-dark);
+    background-color: var(--background-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-h1 {
-    text-align: center;
-    color: #333;
+/* --- Barra de Navegación (Header) --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background-color: #fff;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-#map {
-    height: 500px;
-    width: 100%;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-#parking-form {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+.logo img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
 }
 
-#parking-form input {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.logo h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
 }
 
-#parking-form button, #close-info {
-    background: #4CAF50;
-    color: white;
+.search-bar {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 8px 15px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    transition: all 0.2s ease-in-out;
+}
+
+.search-bar:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+}
+
+.search-bar input {
     border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
+    outline: none;
+    padding: 5px 10px;
+    font-size: 16px;
+    flex-grow: 1;
+}
+
+.search-bar button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.search-bar button:hover {
+    background-color: #E04B50; /* Un poco más oscuro */
+}
+
+.user-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-nav .nav-item {
+    text-decoration: none;
+    color: var(--text-color-dark);
+    font-weight: 500;
+    font-size: 15px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    transition: background-color 0.2s ease;
+}
+
+.user-nav .nav-item:hover {
+    background-color: var(--border-color);
+}
+
+.user-nav .user-menu {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    transition: all 0.2s ease-in-out;
+}
+
+.user-nav .user-menu:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+}
+
+.user-menu .menu-icon,
+.user-menu .user-icon {
+    font-size: 20px;
+    color: var(--text-color-dark);
+}
+
+/* --- Barra de Filtros --- */
+.filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    padding: 20px 40px;
+    background-color: #fff;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
+    flex-wrap: wrap; /* Permite que los filtros se ajusten en pantallas pequeñas */
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.filter-item label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    margin-bottom: 5px;
+}
+
+.filter-item select,
+.filter-item input[type="checkbox"] {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 15px;
+    outline: none;
+    cursor: pointer;
+    background-color: #fff;
+    min-width: 150px;
+}
+
+.filter-item input[type="checkbox"] {
+    width: auto;
+    height: auto;
+    margin-top: 5px;
+}
+
+/* --- Contenido Principal (Mapa y Lista) --- */
+.main-content {
+    display: flex;
+    flex-grow: 1; /* Permite que el contenido principal ocupe el espacio restante */
+    padding: 20px 40px;
+    gap: 30px; /* Espacio entre la lista y el mapa */
+}
+
+#parking-list-container {
+    flex: 1; /* Ocupa el 50% del espacio */
+    padding-right: 20px; /* Espacio para el mapa */
+}
+
+#parking-list-container h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: var(--text-color-dark);
+}
+
+#parking-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Columnas responsivas */
+    gap: 25px;
+}
+
+.parking-card {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.2s ease-in-out;
     cursor: pointer;
 }
 
-#parking-form button:hover, #close-info:hover {
-    background: #45a049;
+.parking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
 }
 
-#parking-info {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.parking-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.hidden {
-    display: none;
+.parking-card-info {
+    padding: 15px;
 }
 
-.leaflet-popup-content {
-    min-width: 200px;
+.parking-card-info h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: var(--text-color-dark);
 }
 
-.leaflet-popup-content h3 {
-    margin-top: 0;
-    color: #4CAF50;
+.parking-card-info p {
+    font-size: 14px;
+    color: var(--text-color-light);
+    margin-bottom: 3px;
+}
+
+.parking-card-info .price {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    margin-top: 10px;
+}
+
+.parking-card-info .services {
+    font-size: 13px;
+    color: var(--secondary-color);
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.parking-card-info .status.available {
+    color: green;
+    font-weight: 600;
+}
+
+.parking-card-info .status.unavailable {
+    color: red;
+    font-weight: 600;
+}
+
+/* --- Mapa --- */
+#map-container {
+    flex: 1; /* Ocupa el 50% del espacio */
+    height: 80vh; /* Altura del mapa, ajusta según sea necesario */
+    position: sticky; /* Hace que el mapa se mantenga visible al hacer scroll */
+    top: 100px; /* Ajusta esto para que no se solape con la barra de navegación */
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 1024px) {
+    .main-content {
+        flex-direction: column; /* Apila la lista y el mapa en pantallas medianas */
+        padding: 20px;
+    }
+
+    #parking-list-container {
+        padding-right: 0;
+        margin-bottom: 30px;
+    }
+
+    #map-container {
+        height: 60vh; /* Ajusta la altura del mapa */
+        position: relative; /* Quita el sticky para que fluya con el contenido */
+        top: auto;
+    }
+
+    .navbar {
+        flex-wrap: wrap; /* Permite que los elementos de la navbar se envuelvan */
+        padding: 10px 20px;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .search-bar {
+        width: 100%; /* La barra de búsqueda ocupa todo el ancho */
+        order: 3; /* Colócala debajo del logo y la navegación */
+    }
+
+    .user-nav {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 15px;
+    }
+
+    .logo h1 {
+        font-size: 20px;
+    }
+
+    .search-bar {
+        padding: 6px 12px;
+    }
+
+    .search-bar input {
+        font-size: 14px;
+    }
+
+    .search-bar button {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .user-nav .nav-item {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    .user-menu .menu-icon,
+    .user-menu .user-icon {
+        font-size: 18px;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: center;
+        padding: 15px 20px;
+        gap: 15px;
+    }
+
+    .filter-item select,
+    .filter-item input[type="checkbox"] {
+        min-width: unset;
+        width: 100%;
+    }
+
+    #parking-list-container h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    #parking-list {
+        grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
+        gap: 20px;
+    }
 }

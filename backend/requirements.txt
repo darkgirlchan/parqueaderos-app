@@ -1,4 +1,4 @@
-flask
-flask-cors
-python-dotenv
-geopy
+Flask
+Flask-CORS
+cloudinary
+pyodbc
