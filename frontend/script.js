@@ -90,7 +90,7 @@ function displayParkings(parkings) {
                 <h3>${parking.nombre}</h3>
                 <p>${parking.direccion}</p>
                 <p class="services">${servicesHtml}</p>
-                <p class="price">$${parking.precio_hora.toLocaleString('es-CO')} / hora</p>
+                <p class="price">$${parking.precio_hora?.toLocaleString('es-CO') ?? 'N/A'} / hora</p>
                 <p class="status ${parking.disponible ? 'available' : 'unavailable'}">
                     ${parking.disponible ? 'Disponible' : 'No Disponible'}
                 </p>
@@ -123,22 +123,29 @@ function displayParkings(parkings) {
  * @param {Array} parkings - Lista de objetos parqueadero para añadir como marcadores.
  */
 function addParkingMarkersToMap(parkings) {
-    // Elimina todos los marcadores que estaban previamente en el mapa
     leafletMarkers.forEach(marker => marker.remove());
-    leafletMarkers = []; // Limpia el array de referencias de marcadores
+    leafletMarkers = [];
 
     parkings.forEach(parking => {
+        // *** AÑADIR ESTA VERIFICACIÓN ***
+        if (parking.latitud === undefined || parking.latitud === null ||
+            parking.longitud === undefined || parking.longitud === null ||
+            isNaN(parking.latitud) || isNaN(parking.longitud)) { // isNaN verifica si NO es un número
+            console.warn(`Parqueadero ID ${parking.id || 'desconocido'} tiene coordenadas inválidas. No se añadirá al mapa.`);
+            return; // Salta a la siguiente iteración del bucle si las coordenadas no son válidas
+        }
+
         // Crea un nuevo marcador de Leaflet en la posición del parqueadero
-        const marker = L.marker([parking.latitud, parking.longitud]) // Leaflet usa [latitud, longitud]
-            .addTo(map) // Añade el marcador al mapa
+        const marker = L.marker([parking.latitud, parking.longitud]) // <-- Esta es la línea 132 (o similar)
+            .addTo(map)
             .bindPopup(`
                 <b>${parking.nombre}</b><br>
                 ${parking.direccion}<br>
-                Precio: $${parking.precio_hora.toLocaleString('es-CO')}/h<br>
+                Precio: $${parking.precio_hora?.toLocaleString('es-CO') ?? 'N/A'}/h<br>
                 Estado: ${parking.disponible ? 'Disponible' : 'No Disponible'}
-            `); // Añade un popup con información al hacer clic
+            `);
 
-        leafletMarkers.push(marker); // Guarda la referencia del marcador
+        leafletMarkers.push(marker);
     });
 }
 
