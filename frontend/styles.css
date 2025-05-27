@@ -1,7 +1,7 @@
 /* Variables CSS para colores y fuentes */
 :root {
-    --primary-color: #FF5A5F; /* Rojo Airbnb */
-    --secondary-color: #008489; /* Verde azulado */
+    --primary-color: #3ca308; 
+    --secondary-color: #0fc661; /* Verde azulado */
     --text-color-dark: #222222;
     --text-color-light: #717171;
     --border-color: #EBEBEB;
@@ -95,7 +95,7 @@ body {
 }
 
 .search-bar button:hover {
-    background-color: #E04B50; /* Un poco más oscuro */
+    background-color: #14820c; /* Un poco más oscuro */
 }
 
 .user-nav {
