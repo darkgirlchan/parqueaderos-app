@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofrece tu Parqueadero - ParquiPass</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .form-container { background: #fff; padding: 40px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); max-width: 600px; width: 100%; margin: auto; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 15px; }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="url"],
+        .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 16px; font-family: var(--font-family); }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-top: 10px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; }
+        .checkbox-item input { width: 18px; height: 18px; }
+        .submit-button { width: 100%; background-color: var(--primary-color); color: #fff; border: none; border-radius: 30px; padding: 15px 20px; cursor: pointer; font-size: 16px; font-weight: 600; transition: background-color 0.2s ease; }
+        .submit-button:hover { background-color: #14820c; }
+        #form-response { margin-top: 20px; text-align: center; font-weight: 600; padding: 10px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <div class="logo">
+                <img src="https://res.cloudinary.com/drnpkxoab/image/upload/v1748277944/logo_gdufu8.png" alt="ParquiPass Logo">
+                <h1>ParquiPass</h1>
+            </div>
+        </a>
+        <nav class="user-nav">
+            <a href="index.html" class="nav-item">Volver al mapa</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="form-container">
+            <h2>Registra tu Espacio</h2>
+            <p style="margin-bottom: 30px; color: var(--text-color-light);">Completa los siguientes campos para añadir tu parqueadero a nuestra red.</p>
+            
+            <form id="offer-form">
+                <div class="form-group">
+                    <label for="nombre">Nombre del Parqueadero</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Parqueadero El Central" required>
+                </div>
+                <div class="form-group">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" name="direccion" placeholder="Ej: Calle 10 # 43A - 30" required>
+                </div>
+                 <div class="form-group">
+                    <label for="latitud">Latitud (Coordenada Geográfica)</label>
+                    <input type="number" step="any" id="latitud" name="latitud" placeholder="Ej: 6.1558" required>
+                </div>
+                 <div class="form-group">
+                    <label for="longitud">Longitud (Coordenada Geográfica)</label>
+                    <input type="number" step="any" id="longitud" name="longitud" placeholder="Ej: -75.3789" required>
+                </div>
+                <div class="form-group">
+                    <label for="precio_hora">Precio por Hora (sin puntos ni comas)</label>
+                    <input type="number" id="precio_hora" name="precio_hora" placeholder="Ej: 3500" required>
+                </div>
+                <div class="form-group">
+                    <label for="imagen">URL de la Imagen</label>
+                    <input type="url" id="imagen" name="imagen" placeholder="https://ejemplo.com/imagen.jpg" required>
+                </div>
+                <div class="form-group">
+                    <label>Servicios Ofrecidos</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item"><input type="checkbox" id="techado" name="servicios" value="Techado"><label for="techado">Techado</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="vigilancia" name="servicios" value="Vigilancia 24/7"><label for="vigilancia">Vigilancia 24/7</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="lavado" name="servicios" value="Lavado de autos"><label for="lavado">Lavado de autos</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="camaras" name="servicios" value="Cámaras"><label for="camaras">Cámaras</label></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">Ofrecer mi Parqueadero</button>
+            </form>
+            <div id="form-response"></div>
+        </div>
+    </main>
+    <script src="ofrecer.js"></script>
+</body>
+</html>

@@ -1,216 +1,218 @@
-// *** CONFIGURACIÓN DE LEAFLET Y OPENSTREETMAP ***
-
-// Inicializar el mapa de Leaflet
-// Centrado en Rionegro, Antioquia, Colombia (aproximado) [latitud, longitud]
-// La línea 2 es esta:
-const map = L.map('map').setView([6.1558, -75.3789], 13); // 13 es el nivel de zoom inicial
-
-// Añadir la capa de mosaicos de OpenStreetMap
-// Esto carga las imágenes del mapa de los servidores de OpenStreetMap
+// *** CONFIGURACIÓN DEL MAPA ***
+const map = L.map('map').setView([6.1558, -75.3789], 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    // Atribución requerida por OpenStreetMap
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// Opcional: Añadir un control de escala al mapa
-L.control.scale().addTo(map);
-
-// *** SELECTORES DE ELEMENTOS DEL DOM ***
+// *** SELECTORES DEL DOM ***
 const parkingListElement = document.getElementById('parking-list');
 const locationInput = document.getElementById('location-input');
 const searchButton = document.getElementById('search-button');
 const priceRangeFilter = document.getElementById('price-range');
 const servicesFilter = document.getElementById('services-filter');
 const availabilityFilter = document.getElementById('availability-filter');
+const helpButton = document.getElementById('help-button');
+const userMenuButton = document.getElementById('user-menu-button');
+const userDropdown = document.getElementById('user-dropdown');
 
-// Variables para almacenar datos y marcadores
-let allParkings = []; // Almacenará todos los parqueaderos cargados desde el backend
-let leafletMarkers = []; // Almacenará las referencias a los marcadores de Leaflet para poder gestionarlos
+// Selectores para el modal de detalles
+const detailsModal = document.getElementById('details-modal');
+const modalCloseButton = document.getElementById('modal-close-button');
+const modalImg = document.getElementById('modal-img');
+const modalName = document.getElementById('modal-name');
+const modalAddress = document.getElementById('modal-address');
+const modalPrice = document.getElementById('modal-price');
+const modalAvailability = document.getElementById('modal-availability');
+const modalServices = document.getElementById('modal-services');
+
+let allParkings = [];
+let leafletMarkers = [];
 
 // *** FUNCIONES PRINCIPALES ***
-
-/**
- * Función asíncrona para cargar parqueaderos desde el backend.
- * Utiliza fetch para hacer una solicitud HTTP GET.
- */
 async function loadParkings() {
     try {
-        // La URL de tu backend Flask. Asegúrate de que Flask esté corriendo en este puerto.
         const response = await fetch('http://127.0.0.1:5000/api/parqueaderos');
-
-        // Verifica si la respuesta HTTP fue exitosa (código 2xx)
         if (!response.ok) {
-            // Lanza un error si la respuesta no es 200 OK
-            throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+            throw new Error(`Error del servidor: ${response.status}`);
         }
-
-        const parkings = await response.json(); // Parsea la respuesta JSON
-        allParkings = parkings; // Guarda todos los parqueaderos para futuros filtros
-        displayParkings(parkings); // Muestra los parqueaderos en la lista
-        addParkingMarkersToMap(parkings); // Añade los marcadores al mapa
+        const parkings = await response.json();
+        // Asegurarnos de que los datos numéricos sean correctos
+        allParkings = parkings.map(p => ({
+            ...p,
+            latitud: parseFloat(p.latitud),
+            longitud: parseFloat(p.longitud),
+            precio_hora: parseFloat(p.precio_hora),
+            cupos_disponibles: parseInt(p.cupos_disponibles, 10)
+        }));
+        filterAndSearchParkings(); // Llama a filtrar para mostrar el estado inicial
     } catch (error) {
-        console.error('Error al cargar los parqueaderos:', error);
-        // Muestra un mensaje amigable al usuario en caso de error
-        parkingListElement.innerHTML = `
-            <p style="color: red; text-align: center;">
-                No se pudieron cargar los parqueaderos.
-                <br>Por favor, asegúrate de que el **backend (servidor Flask)** esté corriendo.
-                <br>Revisa la consola del navegador (F12) para más detalles.
-            </p>
-        `;
+        console.error('Error al cargar parqueaderos:', error);
+        parkingListElement.innerHTML = `<p style="text-align: center; color: red;">No se pudieron cargar los parqueaderos. Asegúrate de que el servidor Python (app.py) esté funcionando y que la base de datos sea accesible.</p>`;
     }
 }
 
-/**
- * Función para mostrar los parqueaderos en el DOM (crea las "tarjetas").
- * @param {Array} parkings - Lista de objetos parqueadero a mostrar.
- */
 function displayParkings(parkings) {
-    parkingListElement.innerHTML = ''; // Limpia el contenido actual de la lista
-
+    parkingListElement.innerHTML = '';
     if (parkings.length === 0) {
-        parkingListElement.innerHTML = '<p style="text-align: center; color: var(--text-color-light);">No se encontraron parqueaderos que coincidan con tu búsqueda.</p>';
-        return; // Sale de la función si no hay parqueaderos
+        parkingListElement.innerHTML = '<p>No se encontraron parqueaderos que coincidan con tu búsqueda.</p>';
+        return;
     }
 
     parkings.forEach(parking => {
         const card = document.createElement('div');
         card.classList.add('parking-card');
-        card.dataset.id = parking.id; // Guarda el ID del parqueadero en el elemento HTML
+        card.dataset.id = parking.id;
 
-        // Formatea la lista de servicios. Si no hay, muestra un mensaje por defecto.
-        const servicesHtml = parking.servicios && parking.servicios.length > 0
-            ? parking.servicios.map(service => `<span>${service}</span>`).join(', ')
-            : 'Servicios no especificados';
+        // ===== LÓGICA DE VISUALIZACIÓN DE CUPOS (MODIFICADA) =====
+        const hasSpots = parking.cupos_disponibles > 0;
+        // Ahora muestra el número de cupos o "Lleno" si es 0.
+        const availabilityText = hasSpots ? `${parking.cupos_disponibles} cupos disponibles` : 'Lleno';
+        const availabilityClass = hasSpots ? 'available' : 'unavailable';
 
-        // Construye el HTML para cada tarjeta de parqueadero
         card.innerHTML = `
-            <img src="${parking.imagen}" alt="Imagen de ${parking.nombre}">
+            <img src="${parking.imagen}" alt="Imagen de ${parking.nombre}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/EBEBEB/717171?text=Sin+Imagen';">
             <div class="parking-card-info">
                 <h3>${parking.nombre}</h3>
                 <p>${parking.direccion}</p>
-                <p class="services">${servicesHtml}</p>
                 <p class="price">$${parking.precio_hora?.toLocaleString('es-CO') ?? 'N/A'} / hora</p>
-                <p class="status ${parking.disponible ? 'available' : 'unavailable'}">
-                    ${parking.disponible ? 'Disponible' : 'No Disponible'}
-                </p>
+                <p class="status ${availabilityClass}">${availabilityText}</p>
             </div>
         `;
-        parkingListElement.appendChild(card); // Añade la tarjeta al contenedor de la lista
-
-        // Añade un evento de clic a cada tarjeta
+        
         card.addEventListener('click', () => {
-            // Cuando se hace clic en una tarjeta, el mapa se centra y se anima a la ubicación del parqueadero
-            map.flyTo([parking.latitud, parking.longitud], 16, { // [lat, lng], zoom de acercamiento
-                duration: 1.5 // Duración de la animación en segundos
-            });
-
-            // Opcional: Abre el popup del marcador correspondiente en el mapa
-            const markerToShow = leafletMarkers.find(marker => {
-                const markerLat = marker.getLatLng().lat;
-                const markerLng = marker.getLatLng().lng;
-                return markerLat === parking.latitud && markerLng === parking.longitud;
-            });
-            if (markerToShow) {
-                markerToShow.openPopup();
-            }
+            showParkingDetailsModal(parking.id);
+            map.flyTo([parking.latitud, parking.longitud], 18);
         });
+        
+        parkingListElement.appendChild(card);
     });
 }
 
-/**
- * Añade o actualiza marcadores para cada parqueadero en el mapa de Leaflet.
- * @param {Array} parkings - Lista de objetos parqueadero para añadir como marcadores.
- */
 function addParkingMarkersToMap(parkings) {
     leafletMarkers.forEach(marker => marker.remove());
     leafletMarkers = [];
 
+    // Definición de íconos personalizados para Leaflet
+    const greenParkingIcon = L.divIcon({
+        className: 'parking-marker-green', // Clase para marcador verde
+        html: '<div></div>',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+        popupAnchor: [0, -10]
+    });
+
+    const redParkingIcon = L.divIcon({
+        className: 'parking-marker-red', // Clase para marcador rojo
+        html: '<div></div>',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+        popupAnchor: [0, -10]
+    });
+
     parkings.forEach(parking => {
-        // *** AÑADIR ESTA VERIFICACIÓN ***
-        if (parking.latitud === undefined || parking.latitud === null ||
-            parking.longitud === undefined || parking.longitud === null ||
-            isNaN(parking.latitud) || isNaN(parking.longitud)) { // isNaN verifica si NO es un número
-            console.warn(`Parqueadero ID ${parking.id || 'desconocido'} tiene coordenadas inválidas. No se añadirá al mapa.`);
-            return; // Salta a la siguiente iteración del bucle si las coordenadas no son válidas
+        if (typeof parking.latitud !== 'number' || typeof parking.longitud !== 'number') {
+            console.warn('Parqueadero sin coordenadas válidas:', parking);
+            return;
         }
 
-        // Crea un nuevo marcador de Leaflet en la posición del parqueadero
-        const marker = L.marker([parking.latitud, parking.longitud]) // <-- Esta es la línea 132 (o similar)
-            .addTo(map)
-            .bindPopup(`
-                <b>${parking.nombre}</b><br>
-                ${parking.direccion}<br>
-                Precio: $${parking.precio_hora?.toLocaleString('es-CO') ?? 'N/A'}/h<br>
-                Estado: ${parking.disponible ? 'Disponible' : 'No Disponible'}
-            `);
+        // Determina qué ícono usar basado en los cupos disponibles
+        const markerIcon = parking.cupos_disponibles > 0 ? greenParkingIcon : redParkingIcon;
 
+        const marker = L.marker([parking.latitud, parking.longitud], { icon: markerIcon })
+            .addTo(map)
+            .bindPopup(`<b>${parking.nombre}</b><br>${parking.direccion}<br>Cupos: ${parking.cupos_disponibles > 0 ? parking.cupos_disponibles : 'Lleno'}`);
+        
         leafletMarkers.push(marker);
     });
 }
 
-/**
- * Función para filtrar y buscar parqueaderos basada en los valores de los filtros.
- */
 function filterAndSearchParkings() {
-    let filteredParkings = [...allParkings]; // Crea una copia de todos los parqueaderos para filtrar
+    let filteredParkings = [...allParkings];
+    const searchTerm = locationInput.value.toLowerCase().trim();
+    const selectedPriceRange = priceRangeFilter.value;
+    const selectedService = servicesFilter.value;
+    const isAvailableChecked = availabilityFilter.checked;
 
-    const searchTerm = locationInput.value.toLowerCase().trim(); // Término de búsqueda (ubicación, nombre)
-    const selectedPriceRange = priceRangeFilter.value; // Rango de precio seleccionado
-    const selectedService = servicesFilter.value; // Servicio seleccionado
-    const isAvailableChecked = availabilityFilter.checked; // Si la casilla "Disponible ahora" está marcada
-
-    // 1. Filtrar por término de búsqueda (nombre o dirección)
     if (searchTerm) {
-        filteredParkings = filteredParkings.filter(parking =>
-            parking.nombre.toLowerCase().includes(searchTerm) ||
-            parking.direccion.toLowerCase().includes(searchTerm)
-        );
+        filteredParkings = filteredParkings.filter(p => p.nombre.toLowerCase().includes(searchTerm) || p.direccion.toLowerCase().includes(searchTerm));
     }
-
-    // 2. Filtrar por rango de precios
     if (selectedPriceRange) {
-        filteredParkings = filteredParkings.filter(parking => {
-            if (selectedPriceRange === 'low') {
-                return parking.precio_hora < 3000;
-            } else if (selectedPriceRange === 'medium') {
-                return parking.precio_hora >= 3000 && parking.precio_hora <= 5000;
-            } else if (selectedPriceRange === 'high') {
-                return parking.precio_hora > 5000;
-            }
-            return true; // Si la opción es "Cualquier precio"
+        filteredParkings = filteredParkings.filter(p => {
+            if (!p.precio_hora) return false;
+            if (selectedPriceRange === 'low') return p.precio_hora < 3000;
+            if (selectedPriceRange === 'medium') return p.precio_hora >= 3000 && p.precio_hora <= 5000;
+            if (selectedPriceRange === 'high') return p.precio_hora > 5000;
+            return true;
         });
     }
-
-    // 3. Filtrar por servicio
     if (selectedService) {
-        filteredParkings = filteredParkings.filter(parking =>
-            // Asegura que parking.servicios existe y contiene el servicio seleccionado
-            parking.servicios && parking.servicios.includes(selectedService)
-        );
+        filteredParkings = filteredParkings.filter(p => p.servicios && Array.isArray(p.servicios) && p.servicios.includes(selectedService));
     }
-
-    // 4. Filtrar por disponibilidad
+    // Lógica de disponibilidad actualizada para usar 'cupos_disponibles'
     if (isAvailableChecked) {
-        filteredParkings = filteredParkings.filter(parking => parking.disponible);
+        filteredParkings = filteredParkings.filter(p => p.cupos_disponibles > 0);
     }
 
-    // Después de aplicar todos los filtros, actualiza la visualización
     displayParkings(filteredParkings);
-    addParkingMarkersToMap(filteredParkings); // Actualiza los marcadores en el mapa
+    addParkingMarkersToMap(filteredParkings);
+}
+
+function showParkingDetailsModal(parkingId) {
+    const parking = allParkings.find(p => p.id === parkingId);
+    if (!parking) return;
+
+    modalImg.src = parking.imagen;
+    modalImg.onerror = () => { modalImg.src = 'https://placehold.co/600x400/EBEBEB/717171?text=Sin+Imagen'; };
+    modalName.textContent = parking.nombre;
+    modalAddress.textContent = parking.direccion;
+    modalPrice.textContent = `$${parking.precio_hora?.toLocaleString('es-CO') ?? 'N/A'}`;
+
+    // Lógica para el modal
+    const hasSpots = parking.cupos_disponibles > 0;
+    modalAvailability.textContent = hasSpots ? `${parking.cupos_disponibles} cupos` : 'Lleno';
+    modalAvailability.className = `status ${hasSpots ? 'available' : 'unavailable'}`;
+
+    modalServices.innerHTML = '';
+    if (parking.servicios && parking.servicios.length > 0) {
+        parking.servicios.forEach(service => {
+            const li = document.createElement('li');
+            li.textContent = service;
+            modalServices.appendChild(li);
+        });
+    } else {
+        const li = document.createElement('li');
+        li.textContent = 'No hay servicios especiales.';
+        modalServices.appendChild(li);
+    }
+    
+    detailsModal.style.display = 'flex';
+}
+
+function hideParkingDetailsModal() {
+    detailsModal.style.display = 'none';
 }
 
 // *** EVENT LISTENERS ***
-// Asocia la función de filtro a los eventos de los elementos de la interfaz
+document.addEventListener('DOMContentLoaded', loadParkings);
 searchButton.addEventListener('click', filterAndSearchParkings);
-locationInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') { // Permite buscar al presionar Enter en el input de ubicación
-        filterAndSearchParkings();
-    }
-});
+locationInput.addEventListener('keypress', e => e.key === 'Enter' && filterAndSearchParkings());
 priceRangeFilter.addEventListener('change', filterAndSearchParkings);
 servicesFilter.addEventListener('change', filterAndSearchParkings);
 availabilityFilter.addEventListener('change', filterAndSearchParkings);
 
-// Cargar los parqueaderos cuando todo el contenido del DOM haya sido cargado
-document.addEventListener('DOMContentLoaded', loadParkings);
+helpButton.addEventListener('click', e => {
+    e.preventDefault();
+    alert('Usa los filtros para encontrar tu parqueadero ideal. Haz clic en una tarjeta para ver más detalles.');
+});
+userMenuButton.addEventListener('click', e => {
+    e.stopPropagation();
+    userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+});
+document.addEventListener('click', () => userDropdown.style.display = 'none');
+
+modalCloseButton.addEventListener('click', hideParkingDetailsModal);
+detailsModal.addEventListener('click', e => {
+    if (e.target === detailsModal) {
+        hideParkingDetailsModal();
+    }
+});

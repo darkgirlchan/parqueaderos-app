@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ParquiPass - Encuentra tu Parqueadero Ideal</title>
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
     <link rel="stylesheet" href="styles.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -24,12 +21,20 @@
             <button id="search-button">Buscar</button>
         </div>
         <nav class="user-nav">
-            <a href="#" class="nav-item">Ofrece tu parqueadero</a>
-            <a href="#" class="nav-item">Ayuda</a>
-            <button class="nav-item user-menu">
-                <span class="menu-icon">&#9776;</span>
-                <span class="user-icon">&#128100;</span>
-            </button>
+            <a href="ofrecer.html" class="nav-item">Ofrece tu parqueadero</a>
+            <a href="#" class="nav-item" id="help-button">Ayuda</a>
+            <div class="user-menu-container">
+                <button class="nav-item user-menu" id="user-menu-button">
+                    <span class="menu-icon">&#9776;</span>
+                    <span class="user-icon">&#128100;</span>
+                </button>
+                <div id="user-dropdown" class="user-dropdown-menu">
+                    <a href="#">Iniciar Sesión</a>
+                    <a href="#">Registrarse</a>
+                    <hr>
+                    <a href="ofrecer.html">Ofrece tu garaje</a>
+                </div>
+            </div>
         </nav>
     </header>
 
@@ -53,9 +58,9 @@
                 <option value="Cámaras">Cámaras</option>
             </select>
         </div>
-        <div class="filter-item">
-            <label for="availability-filter">Disponibilidad</label>
-            <input type="checkbox" id="availability-filter"> Disponible ahora
+        <div class="filter-item availability-item">
+             <input type="checkbox" id="availability-filter">
+             <label for="availability-filter">Con cupos ahora</label>
         </div>
     </div>
 
@@ -69,9 +74,34 @@
             <div id="map"></div>
         </div>
     </main>
+    
+    <div id="details-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <button id="modal-close-button" class="modal-close">&times;</button>
+            <img id="modal-img" src="" alt="Imagen del parqueadero">
+            <div class="modal-info">
+                <h2 id="modal-name">Nombre del Parqueadero</h2>
+                <p id="modal-address">Dirección completa</p>
+                <hr>
+                <div class="modal-details-grid">
+                    <div>
+                        <strong>Precio por Hora</strong>
+                        <p id="modal-price"></p>
+                    </div>
+                    <div>
+                        <strong>Cupos Disponibles</strong>
+                        <p id="modal-availability" class="status"></p>
+                    </div>
+                </div>
+                <strong>Servicios</strong>
+                <ul id="modal-services">
+                    </ul>
+                <button class="modal-reserve-button">Reservar Ahora</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="script.js"></script>
 </body>
 </html>

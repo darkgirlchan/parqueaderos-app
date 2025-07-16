@@ -1,379 +1,181 @@
-/* Variables CSS para colores y fuentes */
+/* ... (Todo tu CSS anterior permanece igual) ... */
 :root {
-    --primary-color: #3ca308; 
-    --secondary-color: #0fc661; /* Verde azulado */
-    --text-color-dark: #222222;
-    --text-color-light: #717171;
-    --border-color: #EBEBEB;
-    --background-light: #F7F7F7;
-    --font-family: 'Poppins', sans-serif;
-    --box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    --border-radius: 8px;
+    --primary-color: #3ca308; --secondary-color: #0fc661; --text-color-dark: #222222;
+    --text-color-light: #717171; --border-color: #EBEBEB; --background-light: #F7F7F7;
+    --font-family: 'Poppins', sans-serif; --box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    --border-radius: 12px;
 }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-family); line-height: 1.6; color: var(--text-color-dark); background-color: var(--background-light); }
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background-color: #fff; border-bottom: 1px solid var(--border-color); box-shadow: var(--box-shadow); position: sticky; top: 0; z-index: 1000; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo img { height: 40px; }
+.logo h1 { font-size: 24px; font-weight: 700; color: var(--primary-color); }
+.search-bar { display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 30px; padding: 8px 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+.search-bar input { border: none; outline: none; padding: 5px 10px; font-size: 16px; width: 300px; }
+.search-bar button { background-color: var(--primary-color); color: #fff; border: none; border-radius: 20px; padding: 8px 15px; cursor: pointer; font-size: 14px; font-weight: 600; }
+.user-nav { display: flex; align-items: center; gap: 15px; }
+.user-nav .nav-item { text-decoration: none; color: var(--text-color-dark); font-weight: 500; padding: 8px 12px; border-radius: 20px; transition: background-color 0.2s ease; }
+.user-nav .nav-item:hover { background-color: var(--border-color); }
+.user-menu-container { position: relative; }
+.user-nav .user-menu { background-color: #fff; border: 1px solid var(--border-color); border-radius: 30px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.user-dropdown-menu { display: none; position: absolute; right: 0; top: 110%; background: white; border-radius: var(--border-radius); box-shadow: var(--box-shadow); padding: 10px; min-width: 180px; z-index: 1001; }
+.user-dropdown-menu a { display: block; padding: 8px 12px; text-decoration: none; color: var(--text-color-dark); border-radius: 4px; }
+.user-dropdown-menu a:hover { background-color: var(--border-color); }
+.user-dropdown-menu hr { border: 0; border-top: 1px solid var(--border-color); margin: 8px 0; }
+.filter-bar { display: flex; justify-content: center; gap: 20px; padding: 20px 40px; background-color: #fff; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: flex-end; }
+.filter-item { display: flex; flex-direction: column; }
+.filter-item label { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+.filter-item select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 15px; background-color: #fff; min-width: 180px; }
+.filter-item.availability-item { flex-direction: row; align-items: center; gap: 8px; padding-bottom: 8px; }
+.filter-item input[type="checkbox"] { width: 18px; height: 18px; }
+.main-content { display: flex; flex-grow: 1; padding: 20px 40px; gap: 30px; }
+#parking-list-container { flex: 1.2; }
+#parking-list-container h2 { font-size: 28px; font-weight: 700; margin-bottom: 25px; }
+#parking-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+.parking-card { background-color: #fff; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--box-shadow); transition: all 0.2s ease-in-out; cursor: pointer; }
+.parking-card:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+.parking-card img { width: 100%; height: 200px; object-fit: cover; }
+.parking-card-info { padding: 15px; }
+.parking-card-info h3 { font-size: 18px; margin-bottom: 5px; }
+.parking-card-info p { font-size: 14px; color: var(--text-color-light); margin-bottom: 8px; }
+.parking-card-info .price { font-size: 16px; font-weight: 600; color: var(--text-color-dark); }
+.status.available { color: #3ca308; font-weight: 600; }
+.status.unavailable { color: #d93025; font-weight: 600; }
+#map-container { flex: 1; height: 85vh; position: sticky; top: 100px; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--box-shadow); }
+#map { width: 100%; height: 100%; }
 
-/* Estilos globales y reseteo básico */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: var(--font-family);
-    line-height: 1.6;
-    color: var(--text-color-dark);
-    background-color: var(--background-light);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-/* --- Barra de Navegación (Header) --- */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    background-color: #fff;
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--box-shadow);
-    position: sticky;
+/* --- ESTILOS PARA EL NUEVO MODAL --- */
+.modal-backdrop {
+    display: none;
+    position: fixed;
     top: 0;
-    z-index: 1000;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo img {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-}
-
-.logo h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-
-.search-bar {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--border-color);
-    border-radius: 30px;
-    padding: 8px 15px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-    transition: all 0.2s ease-in-out;
-}
-
-.search-bar:hover {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.12);
-}
-
-.search-bar input {
-    border: none;
-    outline: none;
-    padding: 5px 10px;
-    font-size: 16px;
-    flex-grow: 1;
-}
-
-.search-bar button {
-    background-color: var(--primary-color);
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: background-color 0.2s ease;
-}
-
-.search-bar button:hover {
-    background-color: #14820c; /* Un poco más oscuro */
-}
-
-.user-nav {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-nav .nav-item {
-    text-decoration: none;
-    color: var(--text-color-dark);
-    font-weight: 500;
-    font-size: 15px;
-    padding: 8px 12px;
-    border-radius: 20px;
-    transition: background-color 0.2s ease;
-}
-
-.user-nav .nav-item:hover {
-    background-color: var(--border-color);
-}
-
-.user-nav .user-menu {
-    background-color: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: 30px;
-    padding: 8px 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-    transition: all 0.2s ease-in-out;
-}
-
-.user-nav .user-menu:hover {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.12);
-}
-
-.user-menu .menu-icon,
-.user-menu .user-icon {
-    font-size: 20px;
-    color: var(--text-color-dark);
-}
-
-/* --- Barra de Filtros --- */
-.filter-bar {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    padding: 20px 40px;
-    background-color: #fff;
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--box-shadow);
-    flex-wrap: wrap; /* Permite que los filtros se ajusten en pantallas pequeñas */
-}
-
-.filter-item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.filter-item label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-color-dark);
-    margin-bottom: 5px;
-}
-
-.filter-item select,
-.filter-item input[type="checkbox"] {
-    padding: 8px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 15px;
-    outline: none;
-    cursor: pointer;
-    background-color: #fff;
-    min-width: 150px;
-}
-
-.filter-item input[type="checkbox"] {
-    width: auto;
-    height: auto;
-    margin-top: 5px;
-}
-
-/* --- Contenido Principal (Mapa y Lista) --- */
-.main-content {
-    display: flex;
-    flex-grow: 1; /* Permite que el contenido principal ocupe el espacio restante */
-    padding: 20px 40px;
-    gap: 30px; /* Espacio entre la lista y el mapa */
-}
-
-#parking-list-container {
-    flex: 1; /* Ocupa el 50% del espacio */
-    padding-right: 20px; /* Espacio para el mapa */
-}
-
-#parking-list-container h2 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 25px;
-    color: var(--text-color-dark);
-}
-
-#parking-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Columnas responsivas */
-    gap: 25px;
-}
-
-.parking-card {
-    background-color: #fff;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--box-shadow);
-    transition: transform 0.2s ease-in-out;
-    cursor: pointer;
-}
-
-.parking-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
-}
-
-.parking-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.parking-card-info {
-    padding: 15px;
-}
-
-.parking-card-info h3 {
-    font-size: 18px;
-    margin-bottom: 5px;
-    color: var(--text-color-dark);
-}
-
-.parking-card-info p {
-    font-size: 14px;
-    color: var(--text-color-light);
-    margin-bottom: 3px;
-}
-
-.parking-card-info .price {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-color-dark);
-    margin-top: 10px;
-}
-
-.parking-card-info .services {
-    font-size: 13px;
-    color: var(--secondary-color);
-    margin-top: 5px;
-    font-weight: 500;
-}
-
-.parking-card-info .status.available {
-    color: green;
-    font-weight: 600;
-}
-
-.parking-card-info .status.unavailable {
-    color: red;
-    font-weight: 600;
-}
-
-/* --- Mapa --- */
-#map-container {
-    flex: 1; /* Ocupa el 50% del espacio */
-    height: 80vh; /* Altura del mapa, ajusta según sea necesario */
-    position: sticky; /* Hace que el mapa se mantenga visible al hacer scroll */
-    top: 100px; /* Ajusta esto para que no se solape con la barra de navegación */
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--box-shadow);
-}
-
-#map {
+    left: 0;
     width: 100%;
     height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
-
-/* Media Queries para Responsividad */
-@media (max-width: 1024px) {
-    .main-content {
-        flex-direction: column; /* Apila la lista y el mapa en pantallas medianas */
-        padding: 20px;
-    }
-
-    #parking-list-container {
-        padding-right: 0;
-        margin-bottom: 30px;
-    }
-
-    #map-container {
-        height: 60vh; /* Ajusta la altura del mapa */
-        position: relative; /* Quita el sticky para que fluya con el contenido */
-        top: auto;
-    }
-
-    .navbar {
-        flex-wrap: wrap; /* Permite que los elementos de la navbar se envuelvan */
-        padding: 10px 20px;
-        justify-content: center;
-        gap: 15px;
-    }
-
-    .search-bar {
-        width: 100%; /* La barra de búsqueda ocupa todo el ancho */
-        order: 3; /* Colócala debajo del logo y la navegación */
-    }
-
-    .user-nav {
-        gap: 10px;
-    }
+.modal-content {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(0,0,0,0.4);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    border: none;
+    cursor: pointer;
+    line-height: 35px;
+    text-align: center;
+}
+.modal-close:hover {
+    background: rgba(0,0,0,0.7);
+}
+.modal-content img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+.modal-info {
+    padding: 25px;
+    overflow-y: auto;
+}
+.modal-info h2 {
+    margin-bottom: 8px;
+    font-size: 24px;
+}
+.modal-info p {
+    color: var(--text-color-light);
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+.modal-info hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid var(--border-color);
+}
+.modal-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.modal-details-grid div strong {
+    font-size: 14px;
+    color: var(--text-color-dark);
+}
+.modal-details-grid div p {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 5px 0 0 0;
+}
+.modal-info ul {
+    list-style-type: '✓  ';
+    padding-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+.modal-info ul li {
+    padding: 4px 0;
+}
+.modal-reserve-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.modal-reserve-button:hover {
+    background-color: #14820c;
 }
 
 @media (max-width: 768px) {
-    .navbar {
-        padding: 10px 15px;
-    }
+    .navbar { flex-wrap: wrap; padding: 10px 20px; gap: 15px; }
+    .search-bar input { width: 100%; }
+    .main-content { flex-direction: column; padding: 20px; }
+    #parking-list-container { padding-right: 0; }
+    #map-container { height: 60vh; position: relative; top: auto; }
+}
+/* Estilos para el marcador de punto verde (con cupos) */
+.parking-marker-green div {
+    background-color: var(--primary-color); /* Usando tu variable de color primario que es verde */
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white; /* Borde blanco para que resalte */
+    box-shadow: 0 0 5px rgba(0,0,0,0.4);
+}
 
-    .logo h1 {
-        font-size: 20px;
-    }
-
-    .search-bar {
-        padding: 6px 12px;
-    }
-
-    .search-bar input {
-        font-size: 14px;
-    }
-
-    .search-bar button {
-        padding: 6px 12px;
-        font-size: 13px;
-    }
-
-    .user-nav .nav-item {
-        font-size: 13px;
-        padding: 6px 10px;
-    }
-
-    .user-menu .menu-icon,
-    .user-menu .user-icon {
-        font-size: 18px;
-    }
-
-    .filter-bar {
-        flex-direction: column;
-        align-items: center;
-        padding: 15px 20px;
-        gap: 15px;
-    }
-
-    .filter-item select,
-    .filter-item input[type="checkbox"] {
-        min-width: unset;
-        width: 100%;
-    }
-
-    #parking-list-container h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-    }
-
-    #parking-list {
-        grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
-        gap: 20px;
-    }
+/* Estilos para el marcador de punto rojo (sin cupos) */
+.parking-marker-red div {
+    background-color: #d93025; /* Un rojo similar al de los estados 'unavailable' */
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white; /* Borde blanco para que resalte */
+    box-shadow: 0 0 5px rgba(0,0,0,0.4);
 }
