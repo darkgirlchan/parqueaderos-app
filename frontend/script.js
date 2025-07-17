@@ -192,6 +192,49 @@ function hideParkingDetailsModal() {
     detailsModal.style.display = 'none';
 }
 
+// *** SELECTORES DEL DOM (AÑADIR ESTE) ***
+const userDropdownMenu = document.getElementById('user-dropdown');
+
+// =======================================================
+// ==== NUEVAS FUNCIONES PARA MANEJAR ESTADO DE LOGIN ====
+// =======================================================
+
+function checkLoginStatus() {
+    const user = JSON.parse(localStorage.getItem('parquipass_user'));
+
+    if (user) {
+        // El usuario ha iniciado sesión
+        userDropdownMenu.innerHTML = `
+            <a href="#">Hola, ${user.nombre.split(' ')[0]}</a>
+            <hr>
+            <a href="#">Mis Reservas</a>
+            <a href="#">Mi Cartera</a>
+            <a href="#" id="logout-button">Cerrar Sesión</a>
+        `;
+        
+        // Añadir evento al botón de cerrar sesión
+        document.getElementById('logout-button').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('parquipass_user');
+            window.location.reload(); // Recargar la página
+        });
+
+    } else {
+        // El usuario no ha iniciado sesión (menú por defecto)
+        userDropdownMenu.innerHTML = `
+            <a href="login.html">Iniciar Sesión</a>
+            <a href="register.html">Registrarse</a>
+            <hr>
+        `;
+    }
+}
+
+// *** EVENT LISTENERS (MODIFICAR ESTE) ***
+document.addEventListener('DOMContentLoaded', () => {
+    checkLoginStatus(); // ¡Llamar a la nueva función al cargar la página!
+    loadParkings();
+});
+
 // *** EVENT LISTENERS ***
 document.addEventListener('DOMContentLoaded', loadParkings);
 searchButton.addEventListener('click', filterAndSearchParkings);

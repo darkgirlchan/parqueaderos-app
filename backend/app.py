@@ -3,6 +3,7 @@ from flask_cors import CORS
 import pyodbc
 import json
 import re
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 CORS(app)
@@ -98,8 +99,89 @@ def get_parqueaderos():
             conn.close()
             print("Conexión a la base de datos cerrada.")
 
-# Se omite la función POST (add_parqueadero) como solicitaste
-# ...
+@app.route('/api/register', methods=['POST'])
+def register_user():
+    """Registra un nuevo usuario en la base de datos."""
+    data = request.get_json()
+    nombre = data.get('nombre')
+    correo = data.get('correo')
+    contrasena = data.get('contrasena')
+    tipo_vehiculo = data.get('tipo_vehiculo')
+
+    if not all([nombre, correo, contrasena, tipo_vehiculo]):
+        return jsonify({"error": "Faltan datos. Todos los campos son requeridos."}), 400
+
+    # Encriptar la contraseña antes de guardarla
+    contrasena_hash = generate_password_hash(contrasena)
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Error de conexión a la base de datos."}), 500
+        
+        cursor = conn.cursor()
+        
+        # Verificar si el correo ya existe
+        cursor.execute("SELECT Id FROM Usuarios WHERE Correo = ?", correo)
+        if cursor.fetchone():
+            return jsonify({"error": "El correo electrónico ya está registrado."}), 409
+
+        # Insertar el nuevo usuario
+        cursor.execute(
+            "INSERT INTO Usuarios (Nombre, Correo, ContrasenaHash, TipoVehiculo) VALUES (?, ?, ?, ?)",
+            nombre, correo, contrasena_hash, tipo_vehiculo
+        )
+        conn.commit()
+        
+        return jsonify({"message": "Usuario creado exitosamente."}), 201
+
+    except Exception as e:
+        print(f"Error en el registro: {e}")
+        return jsonify({"error": "Ocurrió un error interno al registrar el usuario."}), 500
+    finally:
+        if conn:
+            conn.close()
+
+@app.route('/api/login', methods=['POST'])
+def login_user():
+    """Autentica un usuario y devuelve sus datos si las credenciales son correctas."""
+    data = request.get_json()
+    correo = data.get('correo')
+    contrasena = data.get('contrasena')
+
+    if not correo or not contrasena:
+        return jsonify({"error": "El correo y la contraseña son requeridos."}), 400
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Error de conexión a la base de datos."}), 500
+            
+        cursor = conn.cursor()
+        cursor.execute("SELECT Id, Nombre, Correo, ContrasenaHash, TipoVehiculo FROM Usuarios WHERE Correo = ?", correo)
+        user = cursor.fetchone()
+
+        if user and check_password_hash(user.ContrasenaHash, contrasena):
+            # Las credenciales son correctas. Devolvemos los datos del usuario.
+            user_data = {
+                "id": user.Id,
+                "nombre": user.Nombre,
+                "correo": user.Correo,
+                "tipo_vehiculo": user.TipoVehiculo
+            }
+            return jsonify(user_data)
+        else:
+            # Credenciales inválidas
+            return jsonify({"error": "Credenciales inválidas."}), 401
+            
+    except Exception as e:
+        print(f"Error en el inicio de sesión: {e}")
+        return jsonify({"error": "Ocurrió un error interno en el inicio de sesión."}), 500
+    finally:
+        if conn:
+            conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
