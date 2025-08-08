@@ -1,4 +1,3 @@
-/* ... (Todo tu CSS anterior permanece igual) ... */
 :root {
     --primary-color: #3ca308; --secondary-color: #0fc661; --text-color-dark: #222222;
     --text-color-light: #717171; --border-color: #EBEBEB; --background-light: #F7F7F7;
@@ -45,7 +44,6 @@ body { font-family: var(--font-family); line-height: 1.6; color: var(--text-colo
 #map-container { flex: 1; height: 85vh; position: sticky; top: 100px; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--box-shadow); }
 #map { width: 100%; height: 100%; }
 
-/* --- ESTILOS PARA EL NUEVO MODAL --- */
 .modal-backdrop {
     display: none;
     position: fixed;
@@ -154,29 +152,63 @@ body { font-family: var(--font-family); line-height: 1.6; color: var(--text-colo
 }
 
 @media (max-width: 768px) {
-    .navbar { flex-wrap: wrap; padding: 10px 20px; gap: 15px; }
-    .search-bar input { width: 100%; }
-    .main-content { flex-direction: column; padding: 20px; }
-    #parking-list-container { padding-right: 0; }
-    #map-container { height: 60vh; position: relative; top: auto; }
+    .navbar {
+        flex-wrap: wrap;
+        padding: 10px 20px;
+        gap: 15px;
+    }
+    .search-bar input {
+        width: 100%;
+    }
+    .main-content {
+        display: flex;
+        flex-direction: column; /* Apila los elementos verticalmente */
+        padding: 20px 40px;
+        gap: 30px;
+    }
+
+    #map-container {
+        height: 60vh; /* Altura del 60% de la ventana */
+        min-height: 300px; /* Asegura una altura mínima de 300px */
+        position: relative;
+        top: auto;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+    }
+
+    #parking-list-container {
+        flex: 1; /* Ocupa el espacio restante */
+        order: 2; /* Se muestra después del mapa */
+    }
+    
+    .parking-card {
+        max-width: none; /* Asegura que la tarjeta ocupe el ancho completo */
+    }
+    
+    /* El contenedor del modal también debe ser responsivo */
+    .modal-content {
+        width: 95%; /* Ajusta el ancho para que quepa en la pantalla */
+        max-height: 95vh;
+    }
 }
 /* Estilos para el marcador de punto verde (con cupos) */
 .parking-marker-green div {
-    background-color: var(--primary-color); /* Usando tu variable de color primario que es verde */
-    width: 16px;
-    height: 16px;
+    background-color: var(--primary-color);
+    width: 24px; /* Aumentado */
+    height: 24px; /* Aumentado */
     border-radius: 50%;
-    border: 2px solid white; /* Borde blanco para que resalte */
+    border: 2px solid white; 
     box-shadow: 0 0 5px rgba(0,0,0,0.4);
 }
 
 /* Estilos para el marcador de punto rojo (sin cupos) */
 .parking-marker-red div {
-    background-color: #d93025; /* Un rojo similar al de los estados 'unavailable' */
-    width: 16px;
-    height: 16px;
+    background-color: #d93025;
+    width: 24px; /* Aumentado */
+    height: 24px; /* Aumentado */
     border-radius: 50%;
-    border: 2px solid white; /* Borde blanco para que resalte */
+    border: 2px solid white;
     box-shadow: 0 0 5px rgba(0,0,0,0.4);
 }
 /* --- ESTILOS PARA FORMULARIOS DE AUTENTICACIÓN --- */
@@ -273,4 +305,81 @@ body { font-family: var(--font-family); line-height: 1.6; color: var(--text-colo
     color: var(--primary-color);
     font-weight: 600;
     text-decoration: none;
+}
+/* Estilos para la página de Preguntas Frecuentes */
+.faq-content {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.faq-content h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.faq-content p {
+    text-align: center;
+    color: var(--text-color-light);
+    margin-bottom: 40px;
+}
+
+.faq-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.faq-item {
+    background-color: #fff;
+    padding: 20px 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.faq-question {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.faq-answer {
+    /* Por defecto, la respuesta está oculta */
+    display: none;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.faq-answer p {
+    text-align: left;
+    margin: 0;
+    color: var(--text-color-light);
+}
+
+/* Estilo para cuando la pregunta está activa */
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+/* Media query para ajustar el diseño en móviles */
+@media (max-width: 768px) {
+    .faq-content h1 {
+        font-size: 28px;
+    }
 }

@@ -243,10 +243,6 @@ priceRangeFilter.addEventListener('change', filterAndSearchParkings);
 servicesFilter.addEventListener('change', filterAndSearchParkings);
 availabilityFilter.addEventListener('change', filterAndSearchParkings);
 
-helpButton.addEventListener('click', e => {
-    e.preventDefault();
-    alert('Usa los filtros para encontrar tu parqueadero ideal. Haz clic en una tarjeta para ver más detalles.');
-});
 userMenuButton.addEventListener('click', e => {
     e.stopPropagation();
     userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
